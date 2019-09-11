@@ -1,0 +1,160 @@
+<html>
+
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147238603-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-147238603-1');
+  </script>
+
+  <!--Load the AJAX API-->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', {
+      'packages': ['table', 'controls']
+    });
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(initialize);
+
+    function initialize() {
+      var queryString = encodeURIComponent('SELECT A, B, C, D, E');
+      var query = new google.visualization.Query(
+        'https://docs.google.com/spreadsheets/d/1fABPOoEOa6UTwdzSEtCkAh89oxQW8nrrkcsxxg8_1TU/gviz/tq?sheet=Sheet2&headers=1&tq=' + queryString);
+      query.send(drawDashboard);
+    }
+    
+    function drawDashboard(response) {
+      if (response.isError()) {
+        alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+        return;
+      }
+      var data = response.getDataTable();
+      
+      // Create a dashboard.
+      var dashboard = new google.visualization.Dashboard(
+        document.getElementById('dashboard_div'));
+     
+      // Control: date
+      var dateRangeSlider = new google.visualization.ControlWrapper({
+        'controlType': 'DateRangeFilter',
+        'containerId': 'range_div',
+        'options': {
+          'filterColumnLabel': 'Start',
+          'ui': {
+            'cssClass': 'dateRange'
+          }
+        }
+      });
+            
+      // Control: string
+      var titleStringFilter = new google.visualization.ControlWrapper({
+        'controlType': 'StringFilter',
+        'containerId': 'filter_div',
+        'options': {
+          'filterColumnLabel': 'Title',
+          'matchType': 'any',
+          'ui': {
+            'cssClass': 'stringFilter'
+          }
+        }
+      });
+      
+      var cssClassNames = {
+        'headerRow': 'italic-darkblue-font large-font bold-font',
+        'tableRow': '',
+        'oddTableRow': 'odd-background',
+        'selectedTableRow': 'select-background large-font',
+        'hoverTableRow': 'hover-background',
+        'headerCell': 'gold-border',
+        'tableCell': '',
+        'rowNumberCell': 'underline-blue-font'
+      };
+      
+      // Table
+      var table = new google.visualization.ChartWrapper({
+        'chartType': 'Table',
+        'containerId': 'table_div',
+        'options': {
+          'width': "100%",
+          'allowHtml': true,
+          'sortColumn': 0,
+          'sortAscending': false,
+          'showRowNumber': true,
+          'cssClassNames': cssClassNames
+        }
+      });
+      
+      // Binding control to chart
+      dashboard.bind(titleStringFilter, table);
+      dashboard.bind(dateRangeSlider, table);
+      
+      // Draw dashboard.
+      dashboard.draw(data);
+    }
+
+  </script>
+  
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    
+    .odd-background {
+       background-color: whitesmoke;
+      }
+
+     .select-background {
+      background-color: #FFFF99 !important;
+     }
+
+    .hover-background {
+     background-color: #FFFF99 !important;
+      }
+    
+    .dateRange {
+      color: #000
+    }
+    
+    .dateRange .google-visualization-controls-slider-thumb {
+        background-color: #000;
+        border: 1px solid #000;
+    }
+    .dateRange .google-visualization-controls-rangefilter-thumblabel {
+        color: #000;
+    }
+    
+    .dateRange .google-visualization-controls-slider-handle {
+      background-color: #000;
+      border: 1px solid #000;
+    }
+    .dateRange .google-visualization-controls-slider-horizontal {
+      border: 1px solid #000;
+    }
+    
+    .stringFilter input{
+      border: 1px solid #000;
+    }
+  </style>
+  
+  <!-- Appzi: Capture Insightful Feedback -->
+  <script async src="https://app.appzi.io/bootstrap/bundle.js?token=AmaK6"></script>
+  <!-- End Appzi -->
+  
+</head>
+
+<body>
+
+  <!--Div that will hold the dashboard-->
+  <div id="dashboard_div">
+    <!--Div that will hold the controls and chart-->
+    <div id="range_div"></div>
+    <div id="filter_div"></div>
+    <div id="table_div"></div>
+  </div>
+</body>
+
+</html>
